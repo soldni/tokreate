@@ -17,6 +17,10 @@ dependencies = [
     "watchtower",
     "logging_json==0.4.0",
 ]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Typing :: Typed",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/soldni/tokreate"
@@ -33,6 +37,7 @@ requires = [
     "setuptools >= 61.0.0",
     "wheel"
 ]
+
 
 [project.optional-dependencies]
 dev = [
