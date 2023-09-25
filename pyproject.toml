@@ -9,7 +9,7 @@ license = {text = "Apache-2.0"}
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "pyllms @ git+https://github.com/kagisearch/pyllms@58da611",
+    "pyllms==0.3.0",
     "pysbd==0.3.4",
     "jinja2",
     "boto3",
