@@ -2,15 +2,15 @@ import copy
 from abc import abstractmethod
 from typing import Any, Callable, List, Literal, Optional, Tuple, Union
 
+from jinja2 import Template
 from llms.llms import LLMS, Result
 from msgspec import Struct, field
-from jinja2 import Template
 
 from .utils import import_function_from_string
 
 
 class Turn(Struct):
-    role: Literal['user', 'assistant']
+    role: Literal["user", "assistant"]
     content: Any
     state: dict = field(default_factory=dict)
     meta: dict = field(default_factory=dict)
@@ -28,7 +28,7 @@ class Turn(Struct):
 class BaseAction:
     @property
     def next(self) -> Optional["BaseAction"]:
-        return getattr(self, '__next__', None)
+        return getattr(self, "__next__", None)
 
     @next.setter
     def next(self, value: "BaseAction"):
@@ -76,10 +76,7 @@ class ParseAction(BaseAction):
 
         *history, last = history
         last_parsed = Turn(
-            role=last.role,
-            content=last.content,
-            meta=last.meta,
-            state={**last.state, **self.parser(last.content)}
+            role=last.role, content=last.content, meta=last.meta, state={**last.state, **self.parser(last.content)}
         )
         return [*history, last_parsed]
 
@@ -113,15 +110,12 @@ class CallAction(BaseAction):
         return message, system
 
     def _make_user_turn(self, message: str, state: dict) -> Turn:
-        return Turn(role='user', content=message, state=state)
+        return Turn(role="user", content=message, state=state)
 
     def _make_system_turn(self, output: Any, state: dict) -> Turn:
         assert isinstance(output, Result), f"Unexpected result type: {type(output)}"
         return Turn(
-            role='assistant',
-            content=output.text,
-            meta={**output.meta, **output.model_inputs},
-            state=state
+            role="assistant", content=output.text, meta={**output.meta, **output.model_inputs}, state=state
         )
 
     def step(self, history: Optional[List[Turn]] = None, **kwargs) -> List[Turn]:
@@ -132,7 +126,7 @@ class CallAction(BaseAction):
             prompt=message,
             system_message=system,
             history=[turn.as_input() for turn in history] if history else None,
-            **self.parameters
+            **self.parameters,
         )
         system_turn = self._make_system_turn(result, state=state)
         return [*(history or []), user_turn, system_turn]
@@ -145,7 +139,7 @@ class CallAction(BaseAction):
             prompt=message,
             system_message=system,
             history=[turn.as_input() for turn in history] if history else None,
-            **self.parameters
+            **self.parameters,
         )
         system_turn = self._make_system_turn(result, state=state)
         return [*(history or []), user_turn, system_turn]

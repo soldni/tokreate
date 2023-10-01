@@ -5,3 +5,21 @@
 </p>
 
 A library to create tokens using LLMs.
+
+
+## Usage
+
+Start by writing a prompt.
+
+```python
+from tokreate import Prompt
+
+class Greetings(Prompt):
+    prompt = "Hello, my name is {{ name }}. What's yours?"
+
+greetings = Greetings()
+
+# alternatively...
+
+greetings = Prompt(prompt="Hello, my name is {{ name }}. What's yours?")
+```

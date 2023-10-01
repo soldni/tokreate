@@ -43,7 +43,7 @@ def get_logger(
 ) -> Logger:
     level = level if isinstance(level, int) else getattr(sys.modules["logging"], level.upper())
 
-    logger = getLogger(f'tokreate.{name}')
+    logger = getLogger(f"tokreate.{name}")
     logger.setLevel(level)
 
     if isinstance(enable_all_logging, str):
