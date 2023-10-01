@@ -1,8 +1,8 @@
 import importlib
-from typing import Any, Callable
+from typing import Callable
 
 
-def import_function_from_string(func_string: str) -> Callable[[str], Any]:
+def import_function_from_string(func_string: str) -> Callable:
     if "." not in func_string:
         func = globals().get(func_string)
         if func is None:

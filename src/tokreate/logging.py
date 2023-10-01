@@ -1,16 +1,11 @@
 import os
 import sys
-from logging import INFO, Formatter, Handler, Logger, StreamHandler, getLogger
+from logging import WARN, Formatter, Handler, Logger, StreamHandler, getLogger
 from typing import Optional, Union
 
 import boto3
 import watchtower
 from logging_json import JSONFormatter
-
-
-def get_client():
-    region_name = os.environ.get("AWS_REGION", "us-west-2")
-    return boto3.client("logs", region_name=region_name)
 
 
 def get_formatter():
@@ -42,11 +37,14 @@ def get_cloudwatch_handler(stream_name: str, formatter: Formatter, log_group: st
 
 def get_logger(
     name: str,
+    level: Union[str, int] = WARN,
     enable_all_logging: Union[str, bool] = os.getenv("ENABLE_ALL_LOGGING", "true"),
     cloudwatch_log_group: Optional[str] = os.getenv("CLOUDWATCH_LOG_GROUP"),
 ) -> Logger:
-    logger = getLogger(name)
-    logger.setLevel(INFO)
+    level = level if isinstance(level, int) else getattr(sys.modules["logging"], level.upper())
+
+    logger = getLogger(f'tokreate.{name}')
+    logger.setLevel(level)
 
     if isinstance(enable_all_logging, str):
         enable_all_logging = enable_all_logging.lower().strip() in ["true", "1"]
@@ -62,7 +60,7 @@ def get_logger(
         return logger
 
     try:
-        client = get_client()
+        client = boto3.client("logs")
         cloudwatch_handler = get_cloudwatch_handler(
             stream_name=name, log_group=cloudwatch_log_group, formatter=formatter, client=client
         )
@@ -71,9 +69,3 @@ def get_logger(
         logger.error("Failed to connect to CloudWatch")
 
     return logger
-
-
-if __name__ == "__main__":
-    logger = get_logger(__name__)
-    for msg in sys.argv[1:]:
-        logger.info(msg)
