@@ -11,6 +11,14 @@ No [LangChain](https://www.langchain.com) shenenigans.
 See [tokereate.py](https://github.com/soldni/tokreate/blob/main/src/tokreate/tokereate.py) to see where we stand.
 
 
+Tokreate is [available on PyPI](https://pypi.org/project/tokreate/)! Simply run:
+
+```shell
+pip install tokreate
+```
+
+to get started.
+
 ## Usage
 
 Start by setting up a call action:

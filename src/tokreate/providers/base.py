@@ -1,15 +1,22 @@
 import time
 from abc import abstractmethod
 from contextlib import contextmanager
-from typing import Any, Dict, Generator, List, Literal, Optional, Type
+from typing import Any, Dict, Generator, List, Optional, Type
 
-import aiohttp
 from msgspec import Struct, field
+
+USER_ROLE: str = "user"
+SYSTEM_ROLE: str = "system"
+ASSISTANT_ROLE: str = "assistant"
 
 
 class ProviderMessage(Struct):
-    role: Literal["user", "assistant", "system"]
+    role: str
     content: str
+
+    def __post_init__(self):
+        if self.role not in (USER_ROLE, SYSTEM_ROLE, ASSISTANT_ROLE):
+            raise ValueError(f"Role {self.role} not supported.")
 
 
 class ProviderResult(Struct):
@@ -56,7 +63,6 @@ class BaseProvider:
         system_message: Optional[str] = None,
         temperature: float = -1.0,
         max_tokens: int = -1,
-        aiosession: Optional[aiohttp.ClientSession] = None,
         **kwargs,
     ) -> ProviderResult:
         raise NotImplementedError()

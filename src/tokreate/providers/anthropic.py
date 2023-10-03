@@ -1,42 +1,55 @@
-import json
-from typing import Any, List, Optional
+import os
+from typing import List, Optional
 
-import aiohttp
-import msgspec
-import openai
+import anthropic
 
-from .base import BaseProvider, ProviderMessage, ProviderRegistry, ProviderResult
+from .base import ASSISTANT_ROLE, USER_ROLE, BaseProvider, ProviderMessage, ProviderRegistry, ProviderResult
 
 
-class AnthropicResult(ProviderResult):
-    function_call: dict = msgspec.field(default_factory=dict)
+class AntrhopicMessage(ProviderMessage):
+    def to_anthropic(self) -> str:
+        if self.role == USER_ROLE:
+            return f"{anthropic.HUMAN_PROMPT}{self.content}"
+        elif self.role == ASSISTANT_ROLE:
+            return f"{anthropic.AI_PROMPT}{self.content}"
+        else:
+            raise ValueError(f"Role {self.role} not supported.")
 
 
 class Anthropic(BaseProvider):
     def __init__(self, api_key: Optional[str] = None) -> None:
-        openai.api_key = api_key or openai.api_key
+        api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
+        self.client = anthropic.Anthropic(api_key=api_key)
+        self.async_client = anthropic.AsyncAnthropic(api_key=api_key)
 
     def _prepare_model_inputs(
         self,
         prompt: str,
         history: Optional[List[dict]] = None,
-        system_message: Optional[str] = None,
         temperature: float = 0,
         max_tokens: int = 300,
+        ai_prompt: str = "",
+        max_tokens_to_sample: Optional[int] = None,
+        stop_sequences: Optional[List[str]] = None,
         **kwargs,
     ) -> dict:
-        messages = [ProviderMessage(role="user", content=prompt)]
+        max_tokens_to_sample = max_tokens_to_sample or max_tokens
 
-        if history:
-            messages = [*[ProviderMessage(**m) for m in history], ProviderMessage(role="user", content=prompt)]
+        messages = [
+            *[AntrhopicMessage(**m) for m in (history or [])],
+            AntrhopicMessage(role=USER_ROLE, content=prompt),
+            AntrhopicMessage(role=ASSISTANT_ROLE, content=ai_prompt),
+        ]
+        formatted_prompt = "".join([m.to_anthropic() for m in messages])
 
-        if system_message:
-            messages = [*messages, ProviderMessage(role="system", content=system_message)]
+        if stop_sequences is None:
+            stop_sequences = [anthropic.HUMAN_PROMPT]
 
         model_inputs = {
-            "messages": [msgspec.structs.asdict(m) for m in messages],
+            "prompt": formatted_prompt,
             "temperature": temperature,
-            "max_tokens": max_tokens,
+            "max_tokens_to_sample": max_tokens_to_sample,
+            "stop_sequences": stop_sequences,
             **kwargs,
         }
         return model_inputs
@@ -48,48 +61,30 @@ class Anthropic(BaseProvider):
         system_message: Optional[str] = None,
         temperature: float = 0,
         max_tokens: int = 300,
+        ai_prompt: str = "",
+        stop_sequences: Optional[List[str]] = None,
         **kwargs,
-    ) -> AnthropicResult:
-        """
-        Args:
-            history: messages in Anthropic format, each dict must include role and content key.
-            system_message: system messages in Anthropic format, must have role and content key.
-              It can has name key to include few-shots examples.
-        """
+    ) -> ProviderResult:
+        if system_message is not None:
+            raise ValueError(f"system_message is not supported in {self.model}.")
 
         model_inputs = self._prepare_model_inputs(
             prompt=prompt,
             history=history,
-            system_message=system_message,
             temperature=temperature,
             max_tokens=max_tokens,
+            stop_sequences=stop_sequences,
+            ai_prompt=ai_prompt,
             **kwargs,
         )
 
         with self.track_latency() as latency:
-            response: Any = openai.ChatCompletion.create(model=self.model, **model_inputs)
+            response = self.client.completions.create(model=self.model, **model_inputs)
 
-        is_func_call = response.choices[0].finish_reason == "function_call"
-        if is_func_call:
-            completion = ""
-            function_call = {
-                "name": response.choices[0].message.function_call.name,
-                "arguments": json.loads(response.choices[0].message.function_call.arguments),
-            }
-        else:
-            completion = response.choices[0].message.content.strip()
-            function_call = {}
+        completion = response.completion.strip()
 
-        usage = response.usage
-
-        meta = {
-            "tokens_prompt": usage["prompt_tokens"],
-            "tokens_completion": usage["completion_tokens"],
-            "latency": latency.value,
-        }
-        return AnthropicResult(
-            text=completion, inputs=model_inputs, provider=self, meta=meta, function_call=function_call
-        )
+        meta = {"latency": latency.value}
+        return ProviderResult(text=completion, inputs=model_inputs, provider=self, meta=meta)
 
     async def acomplete(
         self,
@@ -98,44 +93,30 @@ class Anthropic(BaseProvider):
         system_message: Optional[str] = None,
         temperature: float = 0,
         max_tokens: int = 300,
-        aiosession: Optional[aiohttp.ClientSession] = None,
+        ai_prompt: str = "",
+        stop_sequences: Optional[List[str]] = None,
         **kwargs,
-    ) -> AnthropicResult:
-        """
-        Args:
-            history: messages in Anthropic format, each dict must include role and content key.
-            system_message: system messages in Anthropic format, must have role and content key.
-              It can has name key to include few-shots examples.
-        """
-        if aiosession is not None:
-            openai.aiosession.set(aiosession)
+    ) -> ProviderResult:
+        if system_message is not None:
+            raise ValueError(f"system_message is not supported in {self.model}.")
 
         model_inputs = self._prepare_model_inputs(
             prompt=prompt,
             history=history,
-            system_message=system_message,
             temperature=temperature,
             max_tokens=max_tokens,
+            stop_sequences=stop_sequences,
+            ai_prompt=ai_prompt,
             **kwargs,
         )
 
         with self.track_latency() as latency:
-            response: Any = await openai.ChatCompletion.create(model=self.model, **model_inputs)  # pyright: ignore
+            response = await self.async_client.completions.create(model=self.model, **model_inputs)
 
-        completion = response.choices[0].message.content.strip()
-        usage = response.usage
+        completion = response.completion.strip()
 
-        meta = {
-            "tokens_prompt": usage["prompt_tokens"],
-            "tokens_completion": usage["completion_tokens"],
-            "latency": latency.value,
-        }
-        return AnthropicResult(
-            text=completion,
-            inputs=model_inputs,
-            provider=self,
-            meta=meta,
-        )
+        meta = {"latency": latency.value}
+        return ProviderResult(text=completion, inputs=model_inputs, provider=self, meta=meta)
 
 
 @ProviderRegistry
@@ -154,15 +135,15 @@ class ClaudeV1(Anthropic):
 
 
 @ProviderRegistry
-class Gpt35Turbo16k(Anthropic):
-    model: str = "gpt-3.5-turbo-16k"
+class ClaudeV1100k(Anthropic):
+    model: str = "claude-v1-100k"
 
 
 @ProviderRegistry
-class Gpt4(Anthropic):
-    model: str = "gpt-4"
+class ClaudeInstant1(Anthropic):
+    model: str = "claude-instant-1"
 
 
 @ProviderRegistry
-class Gpt432k(Anthropic):
-    model: str = "gpt-4-32k"
+class Claude2(Anthropic):
+    model: str = "claude-2"

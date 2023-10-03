@@ -1,9 +1,9 @@
 [project]
 name = "tokreate"
 version = "0.2.0"
-description = "Paper QA backend"
+description = "Unified APIs for making calls to different LLMs."
 authors = [
-    {name = "Luca Soldaini", email = "lucas@allenai.org" }
+    {name = "Luca Soldaini", email = "luca@soldaini.net" }
 ]
 license = {text = "Apache-2.0"}
 readme = "README.md"
