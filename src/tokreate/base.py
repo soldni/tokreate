@@ -3,9 +3,10 @@ from abc import abstractmethod
 from typing import Any, Callable, List, Literal, Optional, Tuple, Union
 
 from jinja2 import Template
-from llms.llms import LLMS, Result
 from msgspec import Struct, field
 
+# from llms.llms import LLMS, Result
+from .providers import ProviderRegistry, ProviderResult
 from .utils import import_function_from_string
 
 
@@ -96,7 +97,7 @@ class CallAction(BaseAction):
     ):
         self.prompt_template = Template(source=prompt)
         self.system_template = Template(source=system) if system else None
-        self.model_function = LLMS(model=model)
+        self.model_function = ProviderRegistry.get(model=model)
         self.parameters = parameters or {}
 
     def _get_state(self, history: Optional[List[Turn]] = None, **kwargs) -> dict:
@@ -113,10 +114,8 @@ class CallAction(BaseAction):
         return Turn(role="user", content=message, state=state)
 
     def _make_system_turn(self, output: Any, state: dict) -> Turn:
-        assert isinstance(output, Result), f"Unexpected result type: {type(output)}"
-        return Turn(
-            role="assistant", content=output.text, meta={**output.meta, **output.model_inputs}, state=state
-        )
+        assert isinstance(output, ProviderResult), f"Unexpected result type: {type(output)}"
+        return Turn(role="assistant", content=output.text, meta={**output.meta, **output.inputs}, state=state)
 
     def step(self, history: Optional[List[Turn]] = None, **kwargs) -> List[Turn]:
         state = self._get_state(history=history, **kwargs)

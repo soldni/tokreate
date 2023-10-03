@@ -10,10 +10,9 @@ readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
     "pyllms==0.3.0",
-    "pysbd==0.3.4",
+    "msgspec",
     "jinja2",
     "boto3",
-    "numpy",
     "watchtower",
     "logging_json==0.4.0",
 ]
