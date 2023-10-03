@@ -1,7 +1,7 @@
 import time
 from abc import abstractmethod
 from contextlib import contextmanager
-from typing import Any, Dict, List, Literal, Optional, Type
+from typing import Any, Dict, Generator, List, Literal, Optional, Type
 
 import aiohttp
 from msgspec import Struct, field
@@ -27,7 +27,7 @@ class BaseProvider:
     model: str
 
     @contextmanager
-    def track_latency(self):
+    def track_latency(self) -> Generator[Latency, None, None]:
         start = time.perf_counter()
 
         latency = Latency()

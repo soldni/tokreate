@@ -5,7 +5,6 @@ from typing import Any, Callable, List, Literal, Optional, Tuple, Union
 from jinja2 import Template
 from msgspec import Struct, field
 
-# from llms.llms import LLMS, Result
 from .providers import ProviderRegistry, ProviderResult
 from .utils import import_function_from_string
 
@@ -75,11 +74,15 @@ class ParseAction(BaseAction):
             # nothing to parse
             return []
 
-        *history, last = history
-        last_parsed = Turn(
-            role=last.role, content=last.content, meta=last.meta, state={**last.state, **self.parser(last.content)}
+        *history, raw_turn = history
+        parsed_content = self.parser(raw_turn.content)
+        parsed_turn = Turn(
+            role=raw_turn.role,
+            content=parsed_content,
+            meta=raw_turn.meta,
+            state={**raw_turn.state, "raw_content": raw_turn.content},
         )
-        return [*history, last_parsed]
+        return [*history, parsed_turn]
 
 
 class ClearAction(BaseAction):
