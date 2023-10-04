@@ -101,14 +101,8 @@ class OpenAI(BaseProvider):
         aiosession: Optional[aiohttp.ClientSession] = None,
         **kwargs,
     ) -> OpenAIResult:
-        """
-        Args:
-            history: messages in OpenAI format, each dict must include role and content key.
-            system_message: system messages in OpenAI format, must have role and content key.
-              It can has name key to include few-shots examples.
-        """
         if aiosession is not None:
-            openai.aiosession.set(aiosession)
+            openai.aiosession.set(aiosession)  # type: ignore
 
         model_inputs = self._prepare_model_inputs(
             prompt=prompt,
@@ -120,7 +114,7 @@ class OpenAI(BaseProvider):
         )
 
         with self.track_latency() as latency:
-            response: Any = await openai.ChatCompletion.create(model=self.model, **model_inputs)  # pyright: ignore
+            response: Any = await openai.ChatCompletion.acreate(model=self.model, **model_inputs)  # type: ignore
 
         completion = response.choices[0].message.content.strip()
         usage = response.usage

@@ -19,10 +19,10 @@ class Turn(Struct):
         return {"role": self.role, "content": str(self.content)}
 
     def __repr__(self) -> str:
-        return self.__str__()
+        return f"{self.role}>>> {str(self)}"
 
     def __str__(self) -> str:
-        return f"{self.role}>>> {str(self.content)}"
+        return str(self.content)
 
 
 class BaseAction:

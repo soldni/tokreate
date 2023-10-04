@@ -77,3 +77,7 @@ class ProviderRegistry:
     @classmethod
     def get(cls, model: str, *args, **kwargs) -> BaseProvider:
         return cls.__registry__[model](*args, **kwargs)
+
+    @classmethod
+    def all(cls) -> List[str]:
+        return list(cls.__registry__.keys())
