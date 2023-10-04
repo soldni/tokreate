@@ -1,10 +1,10 @@
 <h1 align="center">Tokreate</h1>
 
 <p align="center">
-    <img alt="Tokreate official logo" src="https://github.com/soldni/tokreate/blob/main/docs/res/tokreation_1x.png?raw=true" width="50%">
+    <img alt="Tokreate official logo" src="https://github.com/soldni/tokreate/blob/main/docs/res/tokreate.png?raw=true" width="50%">
 </p>
 
-A library to create tokens using LLMs.
+A minimal library to create tokens using LLMs.
 
 **I refuse to write more than 200 lines of code for this.**
 No [LangChain](https://www.langchain.com) shenenigans.

@@ -1,0 +1,5 @@
+theme: jekyll-theme-minimal
+title: tokreate
+description: A minimal library to create tokens using LLMs.
+logo: /assets/img/tokreate.png
+google_analytics: G-LXRX72YD7R
