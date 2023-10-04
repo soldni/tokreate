@@ -101,11 +101,12 @@ class CallAction(BaseAction):
         model: str,
         system: Optional[str] = None,
         parameters: Optional[dict] = None,
+        endpoint: Optional[dict] = None,
         history: bool = True,
     ):
         self.prompt_template = Template(source=prompt)
         self.system_template = Template(source=system) if system else None
-        self.model_function = ProviderRegistry.get(model=model)
+        self.model_function = ProviderRegistry.get(model=model, **(endpoint or {}))
         self.parameters = parameters or {}
         self.history = history
 

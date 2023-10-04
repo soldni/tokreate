@@ -13,8 +13,17 @@ class OpenAIResult(ProviderResult):
 
 
 class OpenAI(BaseProvider):
-    def __init__(self, api_key: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        api_type: Optional[str] = None,
+        api_base: Optional[str] = None,
+        api_version: Optional[str] = None,
+    ) -> None:
         openai.api_key = api_key or openai.api_key
+        openai.api_type = api_type or openai.api_type
+        openai.api_base = api_base or openai.api_base
+        openai.api_version = api_version or openai.api_version
 
     def _prepare_model_inputs(
         self,
