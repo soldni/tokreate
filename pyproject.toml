@@ -24,7 +24,9 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/soldni/tokreate"
+Homepage = "https://tokreate.soldaini.net"
+Source = "https://github.com/soldni/tokreate"
+Tracker = "https://github.com/soldni/tokreate/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
