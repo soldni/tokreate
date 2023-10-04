@@ -1,0 +1,75 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+// @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+header {
+  width: 0px;
+  visibility: hidden;
+}
+
+section {
+  width: 100%;
+  float: center;
+}
+
+body {
+  text-align: justify;
+
+  // font-family: 'Atkinson Hyperlegible', sans-serif;
+  font-size: 100%;
+  line-height: 1.2;
+
+  background-color: #f4f7f8;
+  color: #272d31;
+}
+
+
+
+li {
+  text-align: left;
+}
+
+
+a {
+  color:#21a0ca;
+}
+
+/* mouse over link */
+a:hover {
+  color: #946235;
+  font-style: normal;
+  font-weight: normal;
+  text-decoration: none;
+}
+
+code {
+  font-size: 90%;
+}
+
+.highlight{
+  background-color: #ecf0f1;
+}
+
+
+h1 {
+    font-size: 300%;
+
+    a:hover {
+    font-weight: bold;
+    text-decoration: none;
+  }
+}
+
+p.view {
+  margin-top: 5em;
+  @media(max-width: 960px) {
+    margin-top: 1em;
+  }
+}
+
+footer {
+  visibility: hidden;
+}

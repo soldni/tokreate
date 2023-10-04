@@ -1,7 +1,7 @@
 <h1 align="center">Tokreate</h1>
 
 <p align="center">
-    <img alt="Tokreate official logo" src="https://github.com/soldni/tokreate/blob/main/assets/img/tokreate@1x.png?raw=true" width="50%">
+    <img alt="Tokreate official logo" src="https://github.com/soldni/tokreate/blob/main/assets/img/tokreate@1x.png?raw=true" width="45%">
 </p>
 
 A minimal library to create tokens using LLMs.
@@ -23,6 +23,8 @@ to get started.
 
 Start by setting up a call action:
 
+
+<!-- {% raw %} -->
 ```python
 from tokreate import CallAction
 
@@ -41,9 +43,12 @@ for turn in history:
 # user>>> Hello, my name is Alice; what's yours?
 # assistant>>> Hello Alice, nice to meet you! I'm ChatGPT. How can I assist you today?
 ```
+<!-- {% endraw %} -->
 
 Actions can be chained together:
 
+
+<!-- {% raw %} -->
 ```python
 
 from tokreate import CallAction
@@ -68,9 +73,11 @@ for turn in history:
 # user>>> Can you finish this joke: What do you call a snake with no legs?
 # assistant>>> What do you call a snake with no legs? A "legless" reptile!
 ```
+<!-- {% endraw %} -->
 
 You can use parsers to extract information from any call:
 
+<!-- {% raw %} -->
 ```python
 
 import json
@@ -92,9 +99,11 @@ print(f"Response {parsed_content} (type: {type(parsed_content)})")
 # Output:
 # Response {'numbers': [4, 9, 2, 7, 1]} (type: <class 'dict'>)
 ```
+<!-- {% endraw %} -->
 
 You can switch to different models at any point:
 
+<!-- {% raw %} -->
 ```python
 from tokreate import CallAction
 
@@ -112,9 +121,11 @@ for turn in history:
 # user>>> Hello, my name is Alice; what's yours?
 # assistant>>> I'm Claude, an AI assistant created by Anthropic.
 ```
+<!-- {% endraw %} -->
 
 Let's try with one of the TogetherAI models:
 
+<!-- {% raw %} -->
 ```python
 from tokreate import CallAction
 
@@ -133,3 +144,4 @@ for turn in history:
 # user>>> Hello, my name is Alice; what's yours?
 # assistant>>>  Hello Alice! My name is ChatBot, it's nice to meet you. How can I assist you today? Is there a specific topic you'd like to discuss or ask me a question about?
 ```
+<!-- {% endraw %} -->
