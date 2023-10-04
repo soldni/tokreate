@@ -7,8 +7,8 @@
 A minimal library to create tokens using LLMs.
 
 **I refuse to write more than 200 lines of code for this.**
-No [LangChain](https://www.langchain.com) shenenigans.
-See [tokereate.py](https://github.com/soldni/tokreate/blob/main/src/tokreate/tokereate.py) to see where we stand.
+No [LangChain](https://www.langchain.com) shenanigans.
+See [tokreate.py](https://github.com/soldni/tokreate/blob/main/src/tokreate/tokreate.py) to see where we stand.
 
 
 Tokreate is [available on PyPI](https://pypi.org/project/tokreate/)! Simply run:
