@@ -57,7 +57,7 @@ tell_joke = CallAction(
     model="gpt-3.5-turbo"
 )
 
-history = (greetings + tell_joke).run(name="Alice", animal="snake")
+history = (greetings >> tell_joke).run(name="Alice", animal="snake")
 
 for turn in history:
     print(turn)
@@ -84,10 +84,52 @@ random_numbers = CallAction(
 json_parser = ParseAction(
     parser=json.loads
 )
-*_, last_turn = (random_numbers + json_parser).run(random_count='five')
+*_, last_turn = (random_numbers >> json_parser).run(random_count='five')
 
-print(f"Response {last_turn.content} (type: {type(last_turn.content)})")
+parsed_content = last_turn.state["json.loads"]
+print(f"Response {parsed_content} (type: {type(parsed_content)})")
 
 # Output:
 # Response {'numbers': [4, 9, 2, 7, 1]} (type: <class 'dict'>)
+```
+
+You can switch to different models at any point:
+
+```python
+from tokreate import CallAction
+
+greetings = CallAction(
+    prompt="Hello, my name is {{ name }}; what's yours?",
+    model="claude-instant-v1.1"
+)
+
+history = greetings.run(name="Alice")
+
+for turn in history:
+    print(turn)
+
+# Output:
+# user>>> Hello, my name is Alice; what's yours?
+# assistant>>> I'm Claude, an AI assistant created by Anthropic.
+```
+
+Let's try with one of the TogetherAI models:
+
+```python
+from tokreate import CallAction
+
+greetings = CallAction(
+    prompt="Hello, my name is {{ name }}; what's yours?",
+    model="togethercomputer/llama-2-70b-chat",
+    history=False   # TogetherAI models don't support history at API level yet :( you can make your own in prompt
+)
+
+history = greetings.run(name="Alice")
+
+for turn in history:
+    print(turn)
+
+# Output:
+# user>>> Hello, my name is Alice; what's yours?
+# assistant>>>  Hello Alice! My name is ChatBot, it's nice to meet you. How can I assist you today? Is there a specific topic you'd like to discuss or ask me a question about?
 ```
