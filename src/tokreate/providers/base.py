@@ -71,8 +71,11 @@ class BaseProvider:
 class ProviderRegistry:
     __registry__: Dict[str, Type[BaseProvider]] = {}
 
-    def __new__(cls, provider: Type[BaseProvider]):
-        cls.__registry__[provider.model] = provider
+    def __new__(cls, provider: Type[BaseProvider]) -> Type[BaseProvider]:  # type: ignore
+        name = getattr(provider, "model", None) or getattr(provider, "engine", None)
+        assert name is not None, f"Provider {provider} has no model or engine attribute."
+        cls.__registry__[name] = provider
+        return provider
 
     @classmethod
     def get(cls, model: str, *args, **kwargs) -> BaseProvider:
