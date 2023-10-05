@@ -1,6 +1,6 @@
 [project]
 name = "tokreate"
-version = "0.2.4"
+version = "0.2.5"
 description = "Unified APIs for making calls to different LLMs."
 authors = [
     {name = "Luca Soldaini", email = "luca@soldaini.net" }

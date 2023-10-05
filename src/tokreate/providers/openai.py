@@ -13,17 +13,21 @@ class OpenAIResult(ProviderResult):
 
 
 class OpenAI(BaseProvider):
-    def __init__(
-        self,
-        api_key: Optional[str] = None,
-        api_type: Optional[str] = None,
-        api_base: Optional[str] = None,
-        api_version: Optional[str] = None,
-    ) -> None:
+    model: Optional[str] = None  # type: ignore
+    api_type: str = openai.api_type
+    api_base: str = openai.api_base
+    api_version: Optional[str] = openai.api_version
+    engine: Optional[str] = None
+
+    def __init__(self, api_key: Optional[str] = None) -> None:
         openai.api_key = api_key or openai.api_key
-        openai.api_type = api_type or openai.api_type
-        openai.api_base = api_base or openai.api_base
-        openai.api_version = api_version or openai.api_version
+
+        if self.model is None and self.engine is None:
+            raise ValueError("Either `model` or `engine` must be specified.")
+
+        openai.api_base = self.api_base
+        openai.api_version = self.api_version
+        openai.api_type = self.api_type
 
     def _prepare_model_inputs(
         self,
@@ -76,7 +80,7 @@ class OpenAI(BaseProvider):
         )
 
         with self.track_latency() as latency:
-            response: Any = openai.ChatCompletion.create(model=self.model, **model_inputs)
+            response: Any = openai.ChatCompletion.create(model=self.model, engine=self.engine, **model_inputs)
 
         is_func_call = response.choices[0].finish_reason == "function_call"
         if is_func_call:
@@ -111,7 +115,7 @@ class OpenAI(BaseProvider):
         **kwargs,
     ) -> OpenAIResult:
         if aiosession is not None:
-            openai.aiosession.set(aiosession)  # type: ignore
+            openai.aiosession.set(aiosession)
 
         model_inputs = self._prepare_model_inputs(
             prompt=prompt,
@@ -123,7 +127,9 @@ class OpenAI(BaseProvider):
         )
 
         with self.track_latency() as latency:
-            response: Any = await openai.ChatCompletion.acreate(model=self.model, **model_inputs)  # type: ignore
+            response: Any = await openai.ChatCompletion.acreate(
+                model=self.model, engine=self.engine, **model_inputs
+            )
 
         completion = response.choices[0].message.content.strip()
         usage = response.usage
