@@ -119,31 +119,31 @@ class Anthropic(BaseProvider):
         return ProviderResult(text=completion, inputs=model_inputs, provider=self, meta=meta)
 
 
-@ProviderRegistry
+@ProviderRegistry.add
 class ClaudeInstantV11(Anthropic):
     model: str = "claude-instant-v1.1"
 
 
-@ProviderRegistry
+@ProviderRegistry.add
 class ClaudeInstantV1(Anthropic):
     model: str = "claude-instant-v1"
 
 
-@ProviderRegistry
+@ProviderRegistry.add
 class ClaudeV1(Anthropic):
     model: str = "claude-v1"
 
 
-@ProviderRegistry
+@ProviderRegistry.add
 class ClaudeV1100k(Anthropic):
     model: str = "claude-v1-100k"
 
 
-@ProviderRegistry
+@ProviderRegistry.add
 class ClaudeInstant1(Anthropic):
     model: str = "claude-instant-1"
 
 
-@ProviderRegistry
+@ProviderRegistry.add
 class Claude2(Anthropic):
     model: str = "claude-2"

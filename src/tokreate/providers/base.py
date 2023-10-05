@@ -1,7 +1,7 @@
 import time
 from abc import abstractmethod
 from contextlib import contextmanager
-from typing import Any, Dict, Generator, List, Optional, Type
+from typing import Any, Dict, Generator, List, Optional, Type, TypeVar
 
 from msgspec import Struct, field
 
@@ -68,10 +68,14 @@ class BaseProvider:
         raise NotImplementedError()
 
 
+T = TypeVar("T", bound="BaseProvider")
+
+
 class ProviderRegistry:
     __registry__: Dict[str, Type[BaseProvider]] = {}
 
-    def __new__(cls, provider: Type[BaseProvider]) -> Type[BaseProvider]:  # type: ignore
+    @classmethod
+    def add(cls, provider: Type[T]) -> Type[T]:
         name = getattr(provider, "model", None) or getattr(provider, "engine", None)
         assert name is not None, f"Provider {provider} has no model or engine attribute."
         cls.__registry__[name] = provider

@@ -147,21 +147,21 @@ class OpenAI(BaseProvider):
         )
 
 
-@ProviderRegistry
+@ProviderRegistry.add
 class Gpt35Turbo(OpenAI):
     model: str = "gpt-3.5-turbo"
 
 
-@ProviderRegistry
+@ProviderRegistry.add
 class Gpt35Turbo16k(OpenAI):
     model: str = "gpt-3.5-turbo-16k"
 
 
-@ProviderRegistry
+@ProviderRegistry.add
 class Gpt4(OpenAI):
     model: str = "gpt-4"
 
 
-@ProviderRegistry
+@ProviderRegistry.add
 class Gpt432k(OpenAI):
     model: str = "gpt-4-32k"
