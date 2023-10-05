@@ -1,15 +1,16 @@
 import json
+from dataclasses import dataclass, field
 from typing import Any, List, Optional
 
 import aiohttp
-import msgspec
 import openai
 
 from .base import BaseProvider, ProviderMessage, ProviderRegistry, ProviderResult
 
 
+@dataclass(frozen=True, eq=True)
 class OpenAIResult(ProviderResult):
-    function_call: dict = msgspec.field(default_factory=dict)
+    function_call: dict = field(default_factory=dict)
 
 
 class OpenAI(BaseProvider):
@@ -47,7 +48,7 @@ class OpenAI(BaseProvider):
             messages = [*messages, ProviderMessage(role="system", content=system_message)]
 
         model_inputs = {
-            "messages": [msgspec.structs.asdict(m) for m in messages],
+            "messages": [m.asdict() for m in messages],
             "temperature": temperature,
             "max_tokens": max_tokens,
             **kwargs,

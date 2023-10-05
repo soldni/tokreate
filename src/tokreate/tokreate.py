@@ -1,15 +1,16 @@
 import copy
 from abc import abstractmethod
+from dataclasses import dataclass, field, fields
 from typing import Any, Callable, List, Literal, Optional, Tuple, Union
 
 from jinja2 import Template
-from msgspec import Struct, field
 
 from .providers import ProviderRegistry, ProviderResult
 from .utils import import_function_from_string
 
 
-class Turn(Struct):
+@dataclass(frozen=True, eq=True)
+class Turn:
     role: Literal["user", "assistant"]
     content: Any
     state: dict = field(default_factory=dict)
@@ -23,6 +24,9 @@ class Turn(Struct):
 
     def __str__(self) -> str:
         return str(self.content)
+
+    def asdict(self) -> dict:
+        return {f.name: getattr(self, f.name) for f in fields(self)}
 
 
 class BaseAction:

@@ -1,16 +1,16 @@
 import time
 from abc import abstractmethod
 from contextlib import contextmanager
+from dataclasses import dataclass, field, fields
 from typing import Any, Dict, Generator, List, Optional, Type, TypeVar
-
-from msgspec import Struct, field
 
 USER_ROLE: str = "user"
 SYSTEM_ROLE: str = "system"
 ASSISTANT_ROLE: str = "assistant"
 
 
-class ProviderMessage(Struct):
+@dataclass(frozen=True, eq=True)
+class ProviderMessage:
     role: str
     content: str
 
@@ -18,15 +18,23 @@ class ProviderMessage(Struct):
         if self.role not in (USER_ROLE, SYSTEM_ROLE, ASSISTANT_ROLE):
             raise ValueError(f"Role {self.role} not supported.")
 
+    def asdict(self) -> dict:
+        return {f.name: getattr(self, f.name) for f in fields(self)}
 
-class ProviderResult(Struct):
+
+@dataclass(frozen=True, eq=True)
+class ProviderResult:
     text: str
     inputs: Dict[str, Any]
     provider: "BaseProvider"
     meta: Dict[str, Any] = field(default_factory=dict)
 
+    def asdict(self) -> dict:
+        return {f.name: getattr(self, f.name) for f in fields(self)}
 
-class Latency(Struct):
+
+@dataclass
+class Latency:
     value: float = field(default=-1.0)
 
 
