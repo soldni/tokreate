@@ -1,7 +1,7 @@
 <h1 align="center">Tokreate</h1>
 
 <p align="center">
-    <img alt="Tokreate official logo" src="https://github.com/soldni/tokreate/blob/main/assets/img/tokreate@1x.png?raw=true" width="45%">
+    <img alt="Tokreate official logo" src="https://github.com/soldni/tokreate/blob/main/assets/img/optimized_tokreate@1x.webp?raw=true" width="45%">
 </p>
 
 A minimal library to create tokens using LLMs.
