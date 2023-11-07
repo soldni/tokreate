@@ -1,6 +1,6 @@
 [project]
 name = "tokreate"
-version = "0.2.7"
+version = "0.3.0"
 description = "Unified APIs for making calls to different LLMs."
 authors = [
     {name = "Luca Soldaini", email = "luca@soldaini.net" }
@@ -16,6 +16,7 @@ dependencies = [
     "boto3",
     "watchtower",
     "logging_json==0.4.0",
+    "necessary",
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -95,8 +96,29 @@ warn_unreachable = true
 show_error_codes = true
 pretty = true
 
-[tool.mypy-tests]
+[tool.pyright]
+reportPrivateImportUsage = false
+
+[[tool.mypy.overrides]]
+module = "tests.*"
 strict_optional = false
+
+[tool.pytest.ini_options]
+testpaths = "tests/"
+python_classes = [
+  "Test*",
+  "*Test",
+]
+log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+log_level = "DEBUG"
+markers = [
+    "gpu",
+]
+filterwarnings = [
+    'ignore::FutureWarning:huggingface_hub\.file_download',
+    'ignore::DeprecationWarning:pkg_resources',
+    'ignore::DeprecationWarning:google\.rpc',
+]
 
 [tool.flake8]
 per-file-ignores = [

@@ -35,8 +35,8 @@ class OpenAI(BaseProvider):
         prompt: str,
         history: Optional[List[dict]] = None,
         system_message: Optional[str] = None,
-        temperature: float = 0,
-        max_tokens: int = 300,
+        temperature: float = 0.7,
+        max_tokens: int = 2048,
         **kwargs,
     ) -> dict:
         messages = [ProviderMessage(role="user", content=prompt)]
@@ -60,8 +60,8 @@ class OpenAI(BaseProvider):
         prompt: str,
         history: Optional[List[dict]] = None,
         system_message: Optional[str] = None,
-        temperature: float = 0,
-        max_tokens: int = 300,
+        temperature: float = 0.7,
+        max_tokens: int = 2048,
         **kwargs,
     ) -> OpenAIResult:
         """
@@ -110,8 +110,8 @@ class OpenAI(BaseProvider):
         prompt: str,
         history: Optional[List[dict]] = None,
         system_message: Optional[str] = None,
-        temperature: float = 0,
-        max_tokens: int = 300,
+        temperature: float = 0.7,
+        max_tokens: int = 2048,
         aiosession: Optional[aiohttp.ClientSession] = None,
         **kwargs,
     ) -> OpenAIResult:

@@ -340,3 +340,26 @@ Note how `name` is used to specify the key in the state where the output of the 
 ## Supported APIs
 
 This library currently supports OpenAI, Anthropic, and TogetherAI. For a list of all models, run `python -m tokreate.registry`. Please open an [issue on GitHub](https://github.com/soldni/tokreate/issues) to request support for a new API.
+
+## GPT Json Output (New! 11/06)
+
+Tokreate has been updated to keep advantage of the newest GPT-3 API features. For example, using `-1106` models, we can ensure that the output of the API is a valid JSON object:
+
+<!-- {% raw %} -->
+```python
+from tokreate import CallAction
+
+random_action = CallAction(
+    model="gpt-3.5-turbo-1106",
+    prompt="Give me three random numbers as a JSON array",
+    parameters={'response_format': {'type': 'json_object'}}
+)
+
+*, response = random_action.run()
+
+print(response)
+# {
+#   "numbers": [5, 23, 17]
+# }
+```
+<!-- {% endraw %} -->
